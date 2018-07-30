@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/buffalo/middleware/csrf"
 	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/envy"
+	"github.com/gobuffalo/mw-csrf"
 	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
 )
