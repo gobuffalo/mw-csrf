@@ -24,7 +24,7 @@ var (
 	fieldName = tokenKey
 
 	// The HTTP request header to inspect
-	headerName = "X-CSRF-Token"
+	headerName = "X-Csrf-Token"
 
 	// Idempotent (safe) methods as defined by RFC7231 section 4.2.2.
 	safeMethods = []string{"GET", "HEAD", "OPTIONS", "TRACE"}
