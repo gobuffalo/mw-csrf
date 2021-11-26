@@ -8,7 +8,7 @@ import (
 	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/httptest"
-	"github.com/gobuffalo/mw-csrf"
+	csrf "github.com/gobuffalo/mw-csrf"
 	"github.com/stretchr/testify/require"
 )
 
