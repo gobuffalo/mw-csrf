@@ -216,8 +216,8 @@ func unmask(issued []byte) []byte {
 	}
 
 	// We now know the length of the byte slice.
-	otp := issued[tokenLength:]
-	masked := issued[:tokenLength]
+	otp := issued[:tokenLength]
+	masked := issued[tokenLength:]
 
 	// Unmask the token by XOR'ing it against the OTP used to mask it.
 	return xorToken(otp, masked)
