@@ -8,7 +8,7 @@ import (
 	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/httptest"
-	"github.com/gobuffalo/mw-csrf"
+	csrf "github.com/gobuffalo/mw-csrf"
 	"github.com/stretchr/testify/require"
 )
 
@@ -57,6 +57,23 @@ func Test_CSRFOnJSONRequest(t *testing.T) {
 
 	rs := w.JSON("/csrf").Post("")
 	r.Equal(420, rs.Code)
+}
+
+func Test_CSRF_TestMode(t *testing.T) {
+	r := require.New(t)
+
+	env := envy.Get("GO_ENV", "development")
+	envy.Set("GO_ENV", "test")
+	defer envy.Set("GO_ENV", env)
+
+	w := httptest.New(ctCSRFApp())
+
+	// Test missing token case
+	res := w.HTML("/csrf").Post("")
+	r.Equal(200, res.Code)
+
+	rs := w.JSON("/csrf").Post("")
+	r.Equal(200, rs.Code)
 }
 
 func Test_CSRFOnEditingAction(t *testing.T) {
