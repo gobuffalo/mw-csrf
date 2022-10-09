@@ -48,15 +48,16 @@ var (
 // New enable CSRF protection on routes using this middleware.
 // This middleware is adapted from gorilla/csrf
 var New = func(next buffalo.Handler) buffalo.Handler {
-	// don't run in test mode
-	disabled := envy.Get("GO_ENV", "development") == "test"
-
-	return func(c buffalo.Context) error {
-		if disabled {
+	// don't run the actual middleware in test mode
+	if envy.Get("GO_ENV", "development") == "test" {
+		return func(c buffalo.Context) error {
+			c.Logger().Warn("csrf middleware is running in test mode")
 			c.Set(tokenKey, "test")
 			return next(c)
 		}
+	}
 
+	return func(c buffalo.Context) error {
 		req := c.Request()
 
 		ct := req.Header.Get("Content-Type")
