@@ -28,7 +28,6 @@ var (
 
 	// Idempotent (safe) methods as defined by RFC7231 section 4.2.2.
 	safeMethods = []string{"GET", "HEAD", "OPTIONS", "TRACE"}
-	htmlTypes   = []string{"html", "form", "plain", "*/*"}
 )
 
 var (
@@ -59,15 +58,6 @@ var New = func(next buffalo.Handler) buffalo.Handler {
 
 	return func(c buffalo.Context) error {
 		req := c.Request()
-
-		ct := req.Header.Get("Content-Type")
-		if len(ct) == 0 {
-			ct = req.Header.Get("Accept")
-		}
-		// ignore non-html requests
-		if ct != "" && !contains(htmlTypes, ct) {
-			return next(c)
-		}
 
 		var realToken []byte
 		var err error
