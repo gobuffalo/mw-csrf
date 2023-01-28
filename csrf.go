@@ -90,11 +90,11 @@ var New = func(next buffalo.Handler) buffalo.Handler {
 				// otherwise fails to parse.
 				referer, err := url.Parse(req.Referer())
 				if err != nil || referer.String() == "" {
-					return ErrNoReferer
+					return c.Error(http.StatusForbidden, ErrNoReferer)
 				}
 
 				if !sameOrigin(req.URL, referer) {
-					return ErrBadReferer
+					return c.Error(http.StatusForbidden, ErrBadReferer)
 				}
 			}
 
@@ -103,12 +103,12 @@ var New = func(next buffalo.Handler) buffalo.Handler {
 
 			// Missing token
 			if requestToken == nil {
-				return ErrNoToken
+				return c.Error(http.StatusForbidden, ErrNoToken)
 			}
 
 			// Compare tokens
 			if !compareTokens(requestToken, realToken) {
-				return ErrBadToken
+				return c.Error(http.StatusForbidden, ErrBadToken)
 			}
 		}
 
