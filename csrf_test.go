@@ -1,6 +1,7 @@
 package csrf_test
 
 import (
+	"net/http"
 	"os"
 	"testing"
 
@@ -52,11 +53,12 @@ func Test_CSRFOnJSONRequest(t *testing.T) {
 
 	// Test missing token case
 	res := w.HTML("/csrf").Post("")
-	r.Equal(500, res.Code)
+	r.Equal(http.StatusForbidden, res.Code)
 	r.Contains(res.Body.String(), "CSRF token not found in request")
 
 	rs := w.JSON("/csrf").Post("")
-	r.Equal(420, rs.Code)
+	r.Equal(http.StatusForbidden, rs.Code)
+	r.Contains(res.Body.String(), "CSRF token not found in request")
 }
 
 func Test_CSRF_TestMode(t *testing.T) {
@@ -83,14 +85,14 @@ func Test_CSRFOnEditingAction(t *testing.T) {
 
 	// Test missing token case
 	res := w.HTML("/csrf").Post("")
-	r.Equal(500, res.Code)
+	r.Equal(http.StatusForbidden, res.Code)
 	r.Contains(res.Body.String(), "CSRF token not found in request")
 
 	// Test provided bad token through Header case
 	req := w.HTML("/csrf")
 	req.Headers["X-CSRF-Token"] = "test-token"
 	res = req.Post("")
-	r.Equal(500, res.Code)
+	r.Equal(http.StatusForbidden, res.Code)
 	r.Contains(res.Body.String(), "CSRF token not found in request")
 
 	// Test provided good token through Header case

@@ -28,7 +28,6 @@ var (
 
 	// Idempotent (safe) methods as defined by RFC7231 section 4.2.2.
 	safeMethods = []string{"GET", "HEAD", "OPTIONS", "TRACE"}
-	htmlTypes   = []string{"html", "form", "plain", "*/*"}
 )
 
 var (
@@ -59,15 +58,6 @@ var New = func(next buffalo.Handler) buffalo.Handler {
 
 	return func(c buffalo.Context) error {
 		req := c.Request()
-
-		ct := req.Header.Get("Content-Type")
-		if len(ct) == 0 {
-			ct = req.Header.Get("Accept")
-		}
-		// ignore non-html requests
-		if ct != "" && !contains(htmlTypes, ct) {
-			return next(c)
-		}
 
 		var realToken []byte
 		var err error
@@ -100,11 +90,11 @@ var New = func(next buffalo.Handler) buffalo.Handler {
 				// otherwise fails to parse.
 				referer, err := url.Parse(req.Referer())
 				if err != nil || referer.String() == "" {
-					return ErrNoReferer
+					return c.Error(http.StatusForbidden, ErrNoReferer)
 				}
 
 				if !sameOrigin(req.URL, referer) {
-					return ErrBadReferer
+					return c.Error(http.StatusForbidden, ErrBadReferer)
 				}
 			}
 
@@ -113,12 +103,12 @@ var New = func(next buffalo.Handler) buffalo.Handler {
 
 			// Missing token
 			if requestToken == nil {
-				return ErrNoToken
+				return c.Error(http.StatusForbidden, ErrNoToken)
 			}
 
 			// Compare tokens
 			if !compareTokens(requestToken, realToken) {
-				return ErrBadToken
+				return c.Error(http.StatusForbidden, ErrBadToken)
 			}
 		}
 
